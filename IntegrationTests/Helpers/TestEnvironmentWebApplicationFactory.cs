@@ -13,7 +13,13 @@ public class TestEnvironmentWebApplicationFactory
 {
     private readonly MsSqlContainer _container = new MsSqlBuilder()
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithPassword("Strongest_password_2024!")
+            .WithEnvironment("ACCEPT_EULA", "Y")
+            .WithPassword("Strong_password_123!")
+            .WithWaitStrategy(
+                Wait.ForUnixContainer()
+                    //.UntilPortIsAvailable(1433)
+                    .UntilCommandIsCompleted("/opt/mssql-tools18/bin/sqlcmd", "-C", "-Q", "SELECT 1;")
+            )
             .Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
